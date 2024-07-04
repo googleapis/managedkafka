@@ -24,6 +24,7 @@ import com.google.auth.oauth2.ExternalAccountCredentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.auth.oauth2.UserCredentials;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -127,6 +128,8 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
       subject = ((ImpersonatedCredentials) credentials).getAccount();
     } else if (credentials instanceof StubGoogleCredentials) {
       subject = ((StubGoogleCredentials) credentials).getAccount();
+    } else if(credentials instanceof UserCredentials) {
+      subject = null;
     } else {
       throw new IOException("Unknown credentials type: " + credentials.getClass().getName());
     }
