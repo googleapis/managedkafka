@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@ package com.google.cloud.hosted.kafka.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import com.google.api.services.oauth2.Oauth2;
+import com.google.api.services.oauth2.model.Tokeninfo;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.ComputeEngineCredentials;
 import com.google.auth.oauth2.ExternalAccountCredentials;
@@ -30,6 +34,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
@@ -135,6 +140,10 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
     }
     credentials.refreshIfExpired();
     var googleAccessToken = credentials.getAccessToken();
+
+    if (subject == null){
+      subject = lookupSubject(googleAccessToken.getTokenValue());
+    }
     String kafkaToken = getKafkaAccessToken(googleAccessToken, subject);
 
     var now = Instant.now();
@@ -146,6 +155,18 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
             subject,
             now.toEpochMilli());
     callback.token(token);
+  }
+
+  private static String lookupSubject(String tokenValue) throws IOException{
+    Oauth2 oauth2;
+    try {
+      oauth2 = new Oauth2.Builder(GoogleNetHttpTransport.newTrustedTransport(), GsonFactory.getDefaultInstance(), null).setApplicationName(
+            "").build();
+    } catch (GeneralSecurityException e) {
+      throw new IOException(e);
+    } 
+    Tokeninfo tokeninfo = oauth2.tokeninfo().setAccessToken(tokenValue).execute();
+    return tokeninfo.getEmail();
   }
 
   private static String b64Encode(String data) {
