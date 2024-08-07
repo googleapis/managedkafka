@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
- 
 package com.google.cloud.hosted.kafka.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -50,24 +34,25 @@ import org.apache.kafka.common.security.oauthbearer.internals.secured.BasicOAuth
  * using OAuth.
  */
 public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
-  public static final String JWT_SUBJECT_CLAIM = "sub";
-  public static final String JWT_ISSUED_AT_CLAIM = "iat";
-  public static final String JWT_SCOPE_CLAIM = "scope";
-  public static final String JWT_EXP_CLAIM = "exp";
+  private static final String JWT_SUBJECT_CLAIM = "sub";
+  private static final String JWT_ISSUED_AT_CLAIM = "iat";
+  private static final String JWT_SCOPE_CLAIM = "scope";
+  private static final String JWT_EXP_CLAIM = "exp";
+  private static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
+      "https://www.googleapis.com/auth/cloud-platform";
 
   /** A stub Google credentials class that exposes the account name. Used only for testing. */
-  public abstract static class StubGoogleCredentials extends GoogleCredentials {
+  abstract static class StubGoogleCredentials extends GoogleCredentials {
     abstract String getAccount();
   }
 
-  public static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
-      "https://www.googleapis.com/auth/cloud-platform";
   private static final String HEADER =
       new Gson().toJson(ImmutableMap.of("typ", "JWT", "alg", "GOOG_OAUTH2_TOKEN"));
 
   private boolean configured = false;
   private final GoogleCredentials credentials;
 
+  /** Creates a new callback handler using the default application credentials. */
   public GcpLoginCallbackHandler() {
     try {
       this.credentials =
@@ -174,3 +159,4 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   @Override
   public void close() {}
 }
+
