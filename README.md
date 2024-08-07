@@ -25,8 +25,8 @@ The relevant artifact will be generated and placed in your local maven repositor
 2. Then you can include the following dependency in your build to include the library along with its dependencies.
 ```
 <dependency>
-    <groupId>com.google.cloud</groupId>
-    <artifactId>google-managed-kafka-auth-login-handler</artifactId>
+    <groupId>com.google.cloud.hosted.kafka</groupId>
+    <artifactId>managed-kafka-auth-login-handler</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
