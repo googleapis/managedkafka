@@ -26,6 +26,7 @@ branchProtectionRules:
 - pattern: main
   isAdminEnforced: true
   requiredStatusCheckContexts:
+    - lint
     - 'cla/google'
   # - Add required status checks like presubmit tests
   requiredApprovingReviewCount: 1
