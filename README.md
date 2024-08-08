@@ -1,8 +1,8 @@
-# Apache Kafka [TM] for BigQuery Client Auth
+# Google Cloud Managed Service for Apache Kafka[TM] Client Auth
 
-Client-side Kafka software libraries enabling authentication with Google Cloud Apache Kafka for BigQuery. These libraries allow you to authenticate with the service using [application default credentials](http://cloud/docs/authentication/provide-credentials-adc). This is a safer and simpler authentication mechanism than using service account keys directly. The method relies on Google's OAuth via Kafka's OAUTHBEARER mechanism.
+Client-side Kafka software libraries enabling authentication with Google Cloud Managed Service for Apache Kafka. These libraries allow you to authenticate with the service using [application default credentials](http://cloud/docs/authentication/provide-credentials-adc). This is a safer and simpler authentication mechanism than using service account keys directly. The method relies on Google's OAuth via Kafka's OAUTHBEARER mechanism.
 
-The following presents two alternatives for configuring your Kafka clients to use Google's authentication mechanisms in order to connect with clusters deployed using Apache Kafka for BigQuery.
+The following presents two alternatives for configuring your Kafka clients to use Google's authentication mechanisms in order to connect with clusters deployed using the Managed Service for Apache Kafka.
 
 The first alternative is suited for Java clients where you have the ability to modify the client classpath to include the authentication libraries.
 
@@ -10,7 +10,7 @@ The second alternative works with other clients beyond Java, it requires you run
 
 ## Kafka Java Auth Client Handler
 
-Inside kafka-java-auth, you'll find an implementation of Kafka's [AuthenticateCallbackHandler](https://kafka.apache.org/20/javadoc/org/apache/kafka/common/security/auth/AuthenticateCallbackHandler.html) that is suited to have your Kafka clients authenticate with Google's Apache Kafka for BigQuery clusters.
+Inside kafka-java-auth, you'll find an implementation of Kafka's [AuthenticateCallbackHandler](https://kafka.apache.org/20/javadoc/org/apache/kafka/common/security/auth/AuthenticateCallbackHandler.html) that is suited to have your Kafka clients authenticate with Google Cloud Managed Service for Apache Kafka clusters.
 
 Follow the steps below to get your client setup.
 
