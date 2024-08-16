@@ -8,7 +8,7 @@ The first alternative is suited for Java clients where you have the ability to m
 
 The second alternative offers a solution for non-Java Kafka clients, but requires you to set up a local authentication server. This server's role is to securely exchange your application's default credentials with the Kafka client, enabling authentication and authorization for accessing the Kafka cluster.
 
-In either case, your client will use the Google Auth libraries in order to authenticate using the default environment credentials. By default on GCP environments such as GKE or GCE, it means the library will use the environment default credentials. This behavior can be modified to point to different credentials via the GOOGLE_APPLICATION_CREDENTIALS environment variable as described in [this article](https://github.com/googleapis/google-auth-library-java?tab=readme-ov-file#getting-application-default-credentials).
+In either case, your client leverages Google Auth libraries for authentication using default environment credentials. On GCP environments like GKE or GCE, this typically implies using the environment service accounts. You can override this behavior and specify different credentials using the GOOGLE_APPLICATION_CREDENTIALS environment variable, as detailed in [this article](https://github.com/googleapis/google-auth-library-java?tab=readme-ov-file#getting-application-default-credentials).
 
 
 ## Kafka Java Auth Client Handler
