@@ -19,7 +19,7 @@ Follow these two steps below to get your client setup.
 
 1. The library is available on Maven. Find instructions on how to add it to your project, tailored to your specific build system, [here](https://central.sonatype.com/artifact/com.google.cloud.hosted.kafka/managed-kafka-auth-login-handler).
 
-3. Configure your Kafka client, including the following client authentication properties.
+2. Configure your Kafka client, including the following client authentication properties.
 ```
 security.protocol=SASL_SSL
 sasl.mechanism=OAUTHBEARER
