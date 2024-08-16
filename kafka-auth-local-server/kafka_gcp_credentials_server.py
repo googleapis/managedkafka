@@ -18,7 +18,6 @@ import base64
 import datetime
 import http.server
 import json
-
 import google.auth
 import google.auth.crypt
 import google.auth.jwt
@@ -26,7 +25,9 @@ import google.auth.transport.urllib3
 import urllib3
 
 
-_credentials, _project = google.auth.default()
+_credentials, _project = google.auth.default(
+    scopes=['https://www.googleapis.com/auth/cloud-platform']
+)
 _http_client = urllib3.PoolManager()
 
 
@@ -40,13 +41,11 @@ _HEADER = json.dumps(dict(typ='JWT', alg='GOOG_OAUTH2_TOKEN'))
 
 
 def get_jwt(creds):
-  print('Creds ' + creds.service_account_email)
   return json.dumps(
       dict(
           exp=creds.expiry.timestamp(),
           iss='Google',
           iat=datetime.datetime.now(datetime.timezone.utc).timestamp(),
-          scope='kafka',
           sub=creds.service_account_email,
       )
   )
@@ -61,8 +60,6 @@ def b64_encode(source):
 
 
 def get_kafka_access_token(creds):
-  print('token: ' + creds.token)
-  print('payload ' + b64_encode(get_jwt(creds)))
   return '.'.join(
       [b64_encode(_HEADER), b64_encode(get_jwt(creds)), b64_encode(creds.token)]
   )
@@ -71,7 +68,7 @@ def get_kafka_access_token(creds):
 def build_message():
   creds = valid_credentials()
   expiry_seconds = (
-      creds.expiry - datetime.now(datetime.timezone.utc)
+      creds.expiry - datetime.datetime.now()
   ).total_seconds()
   return json.dumps(
       dict(
@@ -90,14 +87,13 @@ class AuthHandler(http.server.BaseHTTPRequestHandler):
     self.send_header('Content-type', 'application/json')
     self.end_headers()
     message = build_message().encode('utf-8')
-    print(message)
     self.wfile.write(message)
 
-  def do_get(self):
+  def do_GET(self):
     """Handles GET requests."""
     self._handle()
 
-  def do_post(self):
+  def do_POST(self):
     """Handles POST requests."""
     self._handle()
 
