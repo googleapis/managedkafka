@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.cloud.hosted.kafka</groupId>
   <artifactId>managed-kafka-auth-login-handler</artifactId>
-  <version>1.0.0</version><!-- {x-version-update:pubsublite-kafka:current} -->
+  <version>1.0.1-SNAPSHOT</version><!-- {x-version-update:pubsublite-kafka:current} -->
   <packaging>jar</packaging>
   <name>Managed Kafka Auth</name>
   <url>https://github.com/googleapis/managedkafka</url>
-  <description>Kafka Auth Login Handler for Google's Apache Kafka for BigQuery</description>
+  <description>Kafka Auth Login Handler for Google Cloud Managed Service for Apache Kafka[TM]</description>
   <organization>
     <name>Google</name>
     <url>http://www.google.com/</url>
@@ -27,7 +27,7 @@
     <connection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</connection>
     <developerConnection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</developerConnection>
     <url>https://github.com/googleapis/managedkafka</url>
-    <tag>managed-kafka-auth-login-handler-1.0.0</tag>
+    <tag>managed-kafka-auth-login-handler-1.0.1</tag>
   </scm>
   <licenses>
     <license>
