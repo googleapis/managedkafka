@@ -2,7 +2,7 @@
 
 Client-side Kafka software libraries enabling authentication with Google Cloud Managed Service for Apache Kafka. These libraries allow you to authenticate with the service using [application default credentials](http://cloud/docs/authentication/provide-credentials-adc). This is a safer and simpler authentication mechanism than using service account keys directly. The method relies on Google's OAuth via Kafka's OAUTHBEARER mechanism.
 
-The following presents two alternatives for configuring your Kafka clients to use Google's authentication mechanisms in order to connect with clusters deployed using the Managed Service for Apache Kafka.
+The following presents two alternatives for configuring [Kafka Confluent clients](https://docs.confluent.io/platform/current/clients/index.html) to use Google's authentication mechanisms in order to connect with clusters deployed using the Managed Service for Apache Kafka.
 
 The first alternative is suited for Java clients where you have the ability to modify the client classpath to include the authentication libraries.
 
