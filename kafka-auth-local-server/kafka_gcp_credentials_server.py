@@ -43,7 +43,7 @@ _HEADER = json.dumps(dict(typ='JWT', alg='GOOG_OAUTH2_TOKEN'))
 def get_jwt(creds):
   return json.dumps(
       dict(
-          exp=creds.expiry.timestamp(),
+          exp=creds.expiry.replace(tzinfo=datetime.timezone.utc).timestamp(),
           iss='Google',
           iat=datetime.datetime.now(datetime.timezone.utc).timestamp(),
           sub=creds.service_account_email,
@@ -68,7 +68,7 @@ def get_kafka_access_token(creds):
 def build_message():
   creds = valid_credentials()
   expiry_seconds = (
-      creds.expiry - datetime.datetime.now()
+      creds.expiry.replace(tzinfo=datetime.timezone.utc) - datetime.datetime.now(datetime.timezone.utc)
   ).total_seconds()
   return json.dumps(
       dict(
