@@ -59,9 +59,9 @@ public final class GcpLoginCallbackHandlerTest {
   static class UnsupportedCredentials extends GoogleCredentials {}
 
   public GcpLoginCallbackHandler createHandler(GoogleCredentials credentials) throws Exception {
-    var gcpLoginCallbackHandler = new GcpLoginCallbackHandler(credentials);
-    var configs = new HashMap<String, Object>();
-    var jaasConfig = new ArrayList<AppConfigurationEntry>();
+    GcpLoginCallbackHandler gcpLoginCallbackHandler = new GcpLoginCallbackHandler(credentials);
+    HashMap configs = new HashMap<String, Object>();
+    ArrayList jaasConfig = new ArrayList<AppConfigurationEntry>();
     jaasConfig.add(
         new AppConfigurationEntry(
             "OAuthBearerLoginModule",
@@ -74,11 +74,11 @@ public final class GcpLoginCallbackHandlerTest {
 
   @Test
   public void success() throws Exception {
-    var now = Instant.now();
-    var oauthBearerTokenCallback = new OAuthBearerTokenCallback();
+    Instant now = Instant.now();
+    OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    var gcpOAuthBearerLoginCallbackHandler = createHandler(new FakeGoogleCredentials());
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new FakeGoogleCredentials());
     gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
 
     OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
@@ -103,10 +103,10 @@ public final class GcpLoginCallbackHandlerTest {
 
   @Test
   public void fail_unsupportedCredentialType() throws Exception {
-    var oauthBearerTokenCallback = new OAuthBearerTokenCallback();
+    OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    var gcpOAuthBearerLoginCallbackHandler = createHandler(new UnsupportedCredentials());
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new UnsupportedCredentials());
     assertThrows(IOException.class, () -> gcpOAuthBearerLoginCallbackHandler.handle(callbacks));
   }
 }

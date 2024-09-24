@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.cloud.hosted.kafka</groupId>
   <artifactId>managed-kafka-auth-login-handler</artifactId>
-  <version>1.0.1-SNAPSHOT</version><!-- {x-version-update:pubsublite-kafka:current} -->
+  <version>1.0.2-SNAPSHOT</version><!-- {x-version-update:pubsublite-kafka:current} -->
   <packaging>jar</packaging>
   <name>Managed Kafka Auth</name>
   <url>https://github.com/googleapis/managedkafka</url>
@@ -27,7 +27,7 @@
     <connection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</connection>
     <developerConnection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</developerConnection>
     <url>https://github.com/googleapis/managedkafka</url>
-    <tag>managed-kafka-auth-login-handler-1.0.1</tag>
+    <tag>managed-kafka-auth-login-handler-1.0.2</tag>
   </scm>
   <licenses>
     <license>
@@ -37,7 +37,7 @@
     </license>
   </licenses>
   <properties>
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.release>8</maven.compiler.release>
   </properties>
   <dependencies>
     <dependency>

@@ -132,10 +132,10 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
       throw new IOException("Unknown credentials type: " + credentials.getClass().getName());
     }
     credentials.refreshIfExpired();
-    var googleAccessToken = credentials.getAccessToken();
+    AccessToken googleAccessToken = credentials.getAccessToken();
     String kafkaToken = getKafkaAccessToken(googleAccessToken, subject);
 
-    var now = Instant.now();
+    Instant now = Instant.now();
     OAuthBearerToken token =
         new BasicOAuthBearerToken(
             kafkaToken,
