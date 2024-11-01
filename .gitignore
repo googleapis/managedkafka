@@ -26,6 +26,9 @@ hs_err_pid*
 .idea/
 *.iml
 
+# vscode folder
+.vscode/
+
 # maven build directory
 target/
 
