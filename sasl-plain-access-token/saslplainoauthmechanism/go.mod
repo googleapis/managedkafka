@@ -1,4 +1,4 @@
-module github.com/googleapis/managedkafka/saslplainoauthmechanism
+module github.com/googleapis/managedkafka/sasl-plain-access-token/saslplainoauthmechanism
 
 go 1.15
 
