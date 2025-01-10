@@ -61,7 +61,7 @@ func TestNewMechanismWithTokenSource(t *testing.T) {
 			expectErr:      true,
 		},
 		{
-			name:           "Valid Token and Email",
+			name:           "Token Error",
 			tsToken:        nil,
 			tsErr:          errors.New("some error generating token"),
 			principalEmail: "test@example.com",

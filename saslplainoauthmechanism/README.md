@@ -37,7 +37,7 @@ saslplainoauthmechanism supports the following Application Default credential ty
 
     func main() {
 
-        var bootStrapURL = "<broker dns name>:9092"
+        var bootStrapURL = "<broker FQDN>:9092"
         var topicName = "gmk-test"
 
         mechanism, err := saslplainoauthmechanism.NewADCMechanism(context.Background())
@@ -79,7 +79,7 @@ saslplainoauthmechanism supports the following Application Default credential ty
 
     func main() {
 
-        var bootStrapURL = "<broker dns name>:9092"
+        var bootStrapURL = "<broker FQDN>:9092"
         var topicName = "gmk-test"
 
         // Any TokenSource https://pkg.go.dev/golang.org/x/oauth2#TokenSource
@@ -88,7 +88,7 @@ saslplainoauthmechanism supports the following Application Default credential ty
             log.Fatalf("error finding credentials: %v\n", err)
         }
 
-        mechanism, err := saslplainoauthmechanism.NewMechanismWithTokenSource(context.Background(), manualTokenSource.TokenSource, "principal-email@example.cmo")
+        mechanism, err := saslplainoauthmechanism.NewMechanismWithTokenSource(context.Background(), manualTokenSource.TokenSource, "principal-email@example.com")
         if err != nil {
             log.Fatalf("Error creating mechanism: %v\n", err)
         }
