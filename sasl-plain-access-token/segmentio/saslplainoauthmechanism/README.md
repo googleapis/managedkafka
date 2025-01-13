@@ -21,7 +21,7 @@ saslplainoauthmechanism supports the following Application Default credential ty
 
 1. Ensure you have granted the principal the Managed Kafka Client Role (see [here](https://cloud.google.com/managed-service-for-apache-kafka/docs/authentication-kafka#grant-role)).
 
-2. Create a Mechanism and pass it to the dialler.
+2. Create a Mechanism and pass it to the dialer.
 
     ```go
     package main
@@ -31,7 +31,7 @@ saslplainoauthmechanism supports the following Application Default credential ty
         "crypto/tls"
         "log"
 
-        "github.com/googleapis/managedkafka/saslplainoauthmechanism"
+        "github.com/googleapis/managedkafka/sasl-plain-access-token/segmentio/saslplainoauthmechanism"
         "github.com/segmentio/kafka-go"
     )
 
@@ -72,7 +72,7 @@ saslplainoauthmechanism supports the following Application Default credential ty
         "crypto/tls"
         "log"
 
-        "github.com/googleapis/managedkafka/saslplainoauthmechanism"
+        "github.com/googleapis/managedkafka/sasl-plain-access-token/segmentio/saslplainoauthmechanism"
         "github.com/segmentio/kafka-go"
         "golang.org/x/oauth2/google"
     )
