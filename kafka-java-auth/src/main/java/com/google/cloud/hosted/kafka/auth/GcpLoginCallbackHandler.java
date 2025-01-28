@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.cloud.hosted.kafka.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -16,7 +32,6 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.flogger.GoogleLogger;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.time.Instant;
@@ -48,7 +63,6 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   
   public static final JsonFactory JSON_FACTORY = new GsonFactory();
   public static final String TARGET_AUDIENCE = "https://www.googleapis.com/oauth2/v4/token";
-  private static final GoogleLogger logger = GoogleLogger.forEnclosingClass();
 
   /** A stub Google credentials class that exposes the account name. Used only for testing. */
   public abstract static class StubGoogleCredentials extends GoogleCredentials {
@@ -65,10 +79,8 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
 
   public GcpLoginCallbackHandler() {
     try {
-      logger.atInfo().log("Creating Google credentials");
       this.credentials =
           GoogleCredentials.getApplicationDefault().createScoped(GOOGLE_CLOUD_PLATFORM_SCOPE);
-      logger.atInfo().log("Created Google credentials");
     } catch (IOException e) {
       throw new IllegalStateException("Failed to create Google credentials", e);
     }
@@ -114,35 +126,25 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
     // obtain the principal name. Namely, the ones that can be obtained with two-legged
     // authentication, which do not involve user authentication, such as service account
     // credentials.
-    logger.atInfo().log("Parsing %s", credentials.getClass().getName());
     if (credentials instanceof ComputeEngineCredentials computeEngineCredentials) {
-      logger.atInfo().log("Parsing instance of ComputeEngineCredentials");
       subject = computeEngineCredentials.getAccount();
     } else if (credentials instanceof ServiceAccountCredentials serviceAccountCredentials) {
-      logger.atInfo().log("Parsing instance of ServiceAccountCredentials");
       subject = serviceAccountCredentials.getClientEmail();
     } else if (credentials instanceof ExternalAccountCredentials externalAccountCredentials) {
-      logger.atInfo().log("Parsing instance of ExternalAccountCredentials");
       subject = externalAccountCredentials.getServiceAccountEmail();
     } else if (credentials instanceof ImpersonatedCredentials impersonatedCredentials) {
-      logger.atInfo().log("Parsing instance of ImpersonatedCredentials");
       subject = impersonatedCredentials.getAccount();
     } else if (credentials instanceof StubGoogleCredentials stubGoogleCredentials) {
       subject = stubGoogleCredentials.getAccount();
-      logger.atInfo().log("Parsed instance of StubGoogleCredentials, got email: %s", subject);
     } else if (credentials instanceof IdTokenProvider idTokenProvider) {
-      logger.atInfo().log("Parsing instance of IdTokenProvider");
       subject = parseGoogleIdToken(idTokenProvider).getEmail();
     } else {
       throw new IOException("Unknown credentials type: " + credentials.getClass().getName());
     }
-    logger.atInfo().log("Refreshing credentials for subject: %s", subject);
     credentials.refreshIfExpired();
     var googleAccessToken = credentials.getAccessToken();
-    logger.atInfo().log("Google access token: %s", googleAccessToken);
     String kafkaToken = getKafkaAccessToken(googleAccessToken, subject);
-    logger.atInfo().log("Kafka token: %s", kafkaToken);
-    var now = Instant.now();
+    Instant now = Instant.now();
     OAuthBearerToken token =
         new BasicOAuthBearerToken(
             kafkaToken,
