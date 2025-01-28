@@ -70,7 +70,8 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   abstract static class StubGoogleCredentials extends GoogleCredentials {
     abstract String getAccount();
   }
-private static final String HEADER =
+
+  private static final String HEADER =
       new Gson().toJson(ImmutableMap.of("typ", "JWT", "alg", "GOOG_OAUTH2_TOKEN"));
 
   private boolean configured = false;
