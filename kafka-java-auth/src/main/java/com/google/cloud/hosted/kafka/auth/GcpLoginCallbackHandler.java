@@ -55,21 +55,22 @@ import org.apache.kafka.common.security.oauthbearer.internals.secured.BasicOAuth
  * <p>This callback handler is used by the Kafka client to authenticate to a Google's Kafka server
  * using OAuth.
  */
+
 public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
-  public static final String JWT_SUBJECT_CLAIM = "sub";
-  public static final String JWT_ISSUED_AT_CLAIM = "iat";
-  public static final String JWT_SCOPE_CLAIM = "scope";
-  public static final String JWT_EXP_CLAIM = "exp";
-  
-  public static final JsonFactory JSON_FACTORY = new GsonFactory();
-  public static final String TARGET_AUDIENCE = "https://www.googleapis.com/oauth2/v4/token";
+  private static final String JWT_SUBJECT_CLAIM = "sub";
+  private static final String JWT_ISSUED_AT_CLAIM = "iat";
+  private static final String JWT_SCOPE_CLAIM = "scope";
+  private static final String JWT_EXP_CLAIM = "exp";
+
+  private static final JsonFactory JSON_FACTORY = new GsonFactory();
+  private static final String TARGET_AUDIENCE = "https://www.googleapis.com/oauth2/v4/token";
 
   /** A stub Google credentials class that exposes the account name. Used only for testing. */
-  public abstract static class StubGoogleCredentials extends GoogleCredentials {
+  abstract static class StubGoogleCredentials extends GoogleCredentials {
     abstract String getAccount();
   }
 
-  public static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
+  private static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
       "https://www.googleapis.com/auth/cloud-platform";
   private static final String HEADER =
       new Gson().toJson(ImmutableMap.of("typ", "JWT", "alg", "GOOG_OAUTH2_TOKEN"));
@@ -77,6 +78,7 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   private boolean configured = false;
   private final GoogleCredentials credentials;
 
+  /** Creates a new callback handler using the default application credentials. */
   public GcpLoginCallbackHandler() {
     try {
       this.credentials =
@@ -142,8 +144,9 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
       throw new IOException("Unknown credentials type: " + credentials.getClass().getName());
     }
     credentials.refreshIfExpired();
-    var googleAccessToken = credentials.getAccessToken();
+    AccessToken googleAccessToken = credentials.getAccessToken();
     String kafkaToken = getKafkaAccessToken(googleAccessToken, subject);
+
     Instant now = Instant.now();
     OAuthBearerToken token =
         new BasicOAuthBearerToken(
