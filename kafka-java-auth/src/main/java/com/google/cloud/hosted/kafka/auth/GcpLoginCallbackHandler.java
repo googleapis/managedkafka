@@ -61,7 +61,8 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   private static final String JWT_ISSUED_AT_CLAIM = "iat";
   private static final String JWT_SCOPE_CLAIM = "scope";
   private static final String JWT_EXP_CLAIM = "exp";
-
+  private static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
+      "https://www.googleapis.com/auth/cloud-platform";
   private static final JsonFactory JSON_FACTORY = new GsonFactory();
   private static final String TARGET_AUDIENCE = "https://www.googleapis.com/oauth2/v4/token";
 
@@ -69,10 +70,7 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   abstract static class StubGoogleCredentials extends GoogleCredentials {
     abstract String getAccount();
   }
-
-  private static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
-      "https://www.googleapis.com/auth/cloud-platform";
-  private static final String HEADER =
+private static final String HEADER =
       new Gson().toJson(ImmutableMap.of("typ", "JWT", "alg", "GOOG_OAUTH2_TOKEN"));
 
   private boolean configured = false;
