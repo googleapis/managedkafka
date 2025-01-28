@@ -55,7 +55,6 @@ import org.apache.kafka.common.security.oauthbearer.internals.secured.BasicOAuth
  * <p>This callback handler is used by the Kafka client to authenticate to a Google's Kafka server
  * using OAuth.
  */
-
 public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
   private static final String JWT_SUBJECT_CLAIM = "sub";
   private static final String JWT_ISSUED_AT_CLAIM = "iat";
