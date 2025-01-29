@@ -112,8 +112,8 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
     }
 
     for (Callback callback : callbacks) {
-      if (callback instanceof OAuthBearerTokenCallback oAuthBearerTokenCallback) {
-        handleTokenCallback(oAuthBearerTokenCallback);
+      if (callback instanceof OAuthBearerTokenCallback) {
+        handleTokenCallback((OAuthBearerTokenCallback) callback);
       } else {
         throw new UnsupportedCallbackException(callback);
       }
@@ -125,7 +125,7 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
     // The following credentials are the ones that support the getAccount() or similar method to
     // obtain the principal name. Namely, the ones that can be obtained with two-legged
     // authentication, which do not involve user authentication, such as service account
-    // credentials.i
+    // credentials.
     if (credentials instanceof ComputeEngineCredentials) {
       subject = ((ComputeEngineCredentials) credentials).getAccount();
     } else if (credentials instanceof ServiceAccountCredentials) {
