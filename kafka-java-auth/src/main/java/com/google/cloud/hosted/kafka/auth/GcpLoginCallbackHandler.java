@@ -125,17 +125,17 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
     // The following credentials are the ones that support the getAccount() or similar method to
     // obtain the principal name. Namely, the ones that can be obtained with two-legged
     // authentication, which do not involve user authentication, such as service account
-    // credentials.
-    if (credentials instanceof ComputeEngineCredentials computeEngineCredentials) {
-      subject = computeEngineCredentials.getAccount();
-    } else if (credentials instanceof ServiceAccountCredentials serviceAccountCredentials) {
-      subject = serviceAccountCredentials.getClientEmail();
-    } else if (credentials instanceof ExternalAccountCredentials externalAccountCredentials) {
-      subject = externalAccountCredentials.getServiceAccountEmail();
-    } else if (credentials instanceof ImpersonatedCredentials impersonatedCredentials) {
-      subject = impersonatedCredentials.getAccount();
-    } else if (credentials instanceof StubGoogleCredentials stubGoogleCredentials) {
-      subject = stubGoogleCredentials.getAccount();
+    // credentials.i
+    if (credentials instanceof ComputeEngineCredentials) {
+      subject = ((ComputeEngineCredentials) credentials).getAccount();
+    } else if (credentials instanceof ServiceAccountCredentials) {
+      subject = ((ServiceAccountCredentials) credentials).getClientEmail();
+    } else if (credentials instanceof ExternalAccountCredentials) {
+      subject = ((ExternalAccountCredentials) credentials).getServiceAccountEmail();
+    } else if (credentials instanceof ImpersonatedCredentials) {
+      subject = ((ImpersonatedCredentials) credentials).getAccount();
+    } else if (credentials instanceof StubGoogleCredentials) {
+      subject = ((StubGoogleCredentials) credentials).getAccount();
     } else if (credentials instanceof IdTokenProvider idTokenProvider) {
       subject = parseGoogleIdToken(idTokenProvider).getEmail();
     } else {
