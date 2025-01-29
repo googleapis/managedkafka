@@ -27,7 +27,7 @@
     <connection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</connection>
     <developerConnection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</developerConnection>
     <url>https://github.com/googleapis/managedkafka</url>
-    <tag>managed-kafka-auth-login-handler-1.0.3</tag>
+    <tag>managed-kafka-auth-login-handler-1.0.4</tag>
   </scm>
   <licenses>
     <license>
