@@ -142,7 +142,7 @@
 	      <executions>
                 <execution>
                   <phase>package</phase>
-	          <id>attach-sources-jar-no-fork</id>
+	          <id>attach-sources</id>
 	          <goals>
 	            <goal>jar-no-fork</goal>
 	          </goals>
