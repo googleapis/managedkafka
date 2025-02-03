@@ -136,8 +136,8 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
       subject = ((ImpersonatedCredentials) credentials).getAccount();
     } else if (credentials instanceof StubGoogleCredentials) {
       subject = ((StubGoogleCredentials) credentials).getAccount();
-    } else if (credentials instanceof IdTokenProvider idTokenProvider) {
-      subject = parseGoogleIdToken(idTokenProvider).getEmail();
+    } else if (credentials instanceof IdTokenProvider) {
+      subject = parseGoogleIdToken((IdTokenProvider) credentials).getEmail();
     } else {
       throw new IOException("Unknown credentials type: " + credentials.getClass().getName());
     }
