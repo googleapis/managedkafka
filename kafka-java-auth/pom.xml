@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.cloud.hosted.kafka</groupId>
   <artifactId>managed-kafka-auth-login-handler</artifactId>
-  <version>1.0.4-SNAPSHOT</version><!-- {x-version-update:pubsublite-kafka:current} -->
+  <version>1.0.5-SNAPSHOT</version><!-- {x-version-update:pubsublite-kafka:current} -->
   <packaging>jar</packaging>
   <name>Managed Kafka Auth</name>
   <url>https://github.com/googleapis/managedkafka</url>
@@ -27,7 +27,7 @@
     <connection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</connection>
     <developerConnection>scm:git:git@github.com:googleapis/managedkafka.git/kafka-java-auth</developerConnection>
     <url>https://github.com/googleapis/managedkafka</url>
-    <tag>managed-kafka-auth-login-handler-1.0.4</tag>
+    <tag>managed-kafka-auth-login-handler-1.0.5</tag>
   </scm>
   <licenses>
     <license>
@@ -115,6 +115,25 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
         <version>1.7.0</version>
@@ -140,7 +159,7 @@
 	      <artifactId>maven-source-plugin</artifactId>
 	      <version>3.3.1</version>
 	      <executions>
-	        <execution>
+		<execution>
 	          <id>attach-sources</id>
 	          <goals>
 	            <goal>jar-no-fork</goal>
