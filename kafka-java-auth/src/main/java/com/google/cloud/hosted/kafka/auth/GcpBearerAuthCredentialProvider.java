@@ -35,7 +35,7 @@ public class GcpBearerAuthCredentialProvider implements BearerAuthCredentialProv
 
   private static final String GOOGLE_CLOUD_PLATFORM_SCOPE =
       "https://www.googleapis.com/auth/cloud-platform";
-  private static final String GCP_ALIAS = "GCP";
+  private static final String CREDENTIAL_PROVIDER_ALIAS = "GOOGLE_CLOUD_OAUTH";
 
   private final GoogleCredentials credentials;
   private String targetSchemaRegistry;
@@ -58,7 +58,7 @@ public class GcpBearerAuthCredentialProvider implements BearerAuthCredentialProv
 
   @Override
   public String alias() {
-    return GCP_ALIAS;
+    return CREDENTIAL_PROVIDER_ALIAS;
   }
 
   @Override
