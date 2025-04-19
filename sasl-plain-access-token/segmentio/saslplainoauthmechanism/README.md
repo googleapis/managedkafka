@@ -9,7 +9,6 @@ It allows you to use Authorization Tokens with SASL/Plain in [segmentio/kafka-go
 saslplainoauthmechanism supports the following Application Default credential types:
 
 1. [GKE Workload Identity Federation](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity).
-    1. Note: Native Workload Identity Federation principals (`principal://` format) are currently unsupported, you must [link your Kubernetes Service Account](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#kubernetes-sa-to-iam) to a Google Service Account.
 2. [Metadata Server Credentials](https://cloud.google.com/docs/authentication/application-default-credentials#attached-sa) - Such as Google Compute Engine, Cloud Run, etc.
 3. [gcloud CLI Application Default Credentials](https://cloud.google.com/docs/authentication/application-default-credentials#personal). Specifically the following subset:
     1. `user_credentials` (`gcloud auth application-default login`).

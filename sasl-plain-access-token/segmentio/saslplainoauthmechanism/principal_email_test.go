@@ -47,18 +47,39 @@ func TestValidatePrincipalEmail(t *testing.T) {
 			expectErr: false,
 		},
 		{
+			name:      "GKE WIF Principal - Valid",
+			email:     "principal://iam.googleapis.com/projects/1234567891011/locations/global/workloadIdentityPools/my-project.svc.id.goog/subject/ns/custom-namespace/sa/gmktest",
+			expectErr: false,
+		},
+		{
+			name:      "Standard Workload Identity Principal - Valid",
+			email:     "principal://iam.googleapis.com/projects/12345678/locations/global/workloadIdentityPools/my-pool/subject/my-subject",
+			expectErr: false,
+		},
+		{
+			name:      "Standard Workforce Identity Principal - Valid",
+			email:     "principal://iam.googleapis.com/locations/global/workforcePools/altostrat-contractors/subject/raha@altostrat.com",
+			expectErr: false,
+		},
+
+		{
 			name:      "Empty email - Invalid",
 			email:     "",
 			expectErr: true,
 		},
 		{
-			name:      "Workload Identity Federation Pool - No iam.gke.io/return-principal-id-as-email KSA annotation - Invalid",
-			email:     "my-project.svc.id.goog",
+			name:      "Non RFC Email - Invalid",
+			email:     "human[]principaluser@example.com",
 			expectErr: true,
 		},
 		{
-			name:      "Workload Identity Federation Principal - Invalid",
-			email:     "principal://iam.googleapis.com/projects/123456789/locations/global/workloadIdentityPools/my-project.svc.id.goog/subject/ns/default/sa/gmktest",
+			name:      "Bad  WIF Principal Bad Prefix - Invalid",
+			email:     "principal://iammmmmmmm.googleapis.com/projects/1234567891011/locations/global/workloadIdentityPools/my-project.svc.id.goog/subject/ns/custom-namespace/sa/gmktest",
+			expectErr: true,
+		},
+		{
+			name:      "Workload Identity Federation Pool - No iam.gke.io/return-principal-id-as-email KSA annotation - Invalid",
+			email:     "my-project.svc.id.goog",
 			expectErr: true,
 		},
 	}

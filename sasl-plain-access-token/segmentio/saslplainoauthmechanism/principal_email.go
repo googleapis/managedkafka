@@ -47,7 +47,7 @@ func getADCPrincipalEmail(creds *google.Credentials) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("detected GCE, but unable to get Service Account email for default: %w", err)
 		}
-		if validatePrincipalEmail(email) != nil {
+		if err := validatePrincipalEmail(email); err != nil {
 			return "", err
 		}
 		return email, nil
@@ -62,15 +62,25 @@ func getADCPrincipalEmail(creds *google.Credentials) (string, error) {
 	return "", errors.New("unable to determine principal email, did not detect Metadata Server or JSON Credentials")
 }
 
-// Checks that the Service Account in use is a Google Service Account, and not an unsupported type
+// Checks that the principal email in use is valid format for a 1P or 3P identity
 func validatePrincipalEmail(email string) error {
-	// TODO: Relax principal:// restriction once b/385138184 is resolved.
+
 	// There are two responses that the Metadata server will return for http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email in GKE
+	// when NOT using the GA impersonation approach (https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#kubernetes-sa-to-iam)
 	// If the KSA is **not** annotated with 'iam.gke.io/return-principal-id-as-email: "true"', then it will return the Workload Identity Pool name
 	// If it **is** annotated with 'iam.gke.io/return-principal-id-as-email: "true"' then it will return the full principal identifier
-	if strings.HasSuffix(email, ".svc.id.goog") || strings.HasPrefix(email, "principal://iam.googleapis.com") {
-		return errors.New("GMK SASL PLAIN OAuth cannot be used with direct Workload Identity Federation - you must configure KSA --> GSA impersonation, see: https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#kubernetes-sa-to-iam")
+	if strings.HasSuffix(email, ".svc.id.goog") {
+		return errors.New("to use  GKE Workload Identity Federation you must annotate your Kubernetes Service Account with 'iam.gke.io/return-principal-id-as-email: \"true\"'")
 	}
+
+	// Identities are either an email (service account, user email, or group) or a Workload/Workforce identity principal
+	// All Workload/Workforce identity pools start with 'principal://iam.googleapis.com/' so we assume valid if our principal
+	// string begins with this
+	if strings.HasPrefix(email, "principal://iam.googleapis.com/") {
+		return nil
+	}
+
+	// Else check it is a valid email identifier
 	_, err := mail.ParseAddress(email)
 	if err != nil {
 		return fmt.Errorf("invalid email address '%s': %w", email, err)
