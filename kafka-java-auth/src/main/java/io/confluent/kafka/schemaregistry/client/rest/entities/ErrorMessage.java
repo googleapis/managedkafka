@@ -66,11 +66,13 @@ public class ErrorMessage {
   private int errorCode;
   private String message;
 
-  // Required for Jackson to instantiate the class when error_code/message
-  // fields are not present in the JSON message.
   public ErrorMessage() {}
 
-  // Required for compatibility with the old class.
+  // Required for compatibility with the original class.
+  // @JsonProperty("error_code") and @JsonProperty("message") annotations
+  // have been removed to force Jackson always use the default constructor
+  // and then set the values via either setErrorCode/setMessage or
+  // unpackNestedError methods.
   public ErrorMessage(int errorCode, String message) {
       this.errorCode = errorCode;
       this.message = message;
@@ -83,8 +85,8 @@ public class ErrorMessage {
   }
 
   @JsonProperty("error_code")
-  public void setErrorCode(int error_code) {
-    this.errorCode = error_code;
+  public void setErrorCode(int errorCode) {
+    this.errorCode = errorCode;
   }
 
   @Schema(description = "Detailed error message")
@@ -105,10 +107,10 @@ public class ErrorMessage {
     if (code != null) {
       try {
         this.errorCode = ((Integer) code);
-      } catch (Exception e1) {
+      } catch (RuntimeException e1) {
         try {
           this.errorCode = Integer.parseInt(code.toString());
-        } catch (Exception e2) {
+        } catch (RuntimeException e2) {
           // ignore if can't parse the error code as an integer
         }
       }
