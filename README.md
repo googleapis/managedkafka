@@ -39,9 +39,7 @@ In order to use this library, you should:
 pip install virtualenv
 virtualenv <your-env>
 source <your-env>/bin/activate
-<your-env>/bin/pip install packaging
-<your-env>/bin/pip install urllib3
-<your-env>/bin/pip install google-auth
+<your-env>/bin/pip install -r kafka-auth-local-server/requirements.txt
 ```
 
 2. Run the server.
