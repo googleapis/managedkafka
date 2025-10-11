@@ -23,6 +23,7 @@ import (
 	"io"
 	"net/http"
 	"net/mail"
+	"os"
 	"regexp"
 	"strings"
 
@@ -35,10 +36,19 @@ const (
 	tokenInfoAPIURL = "https://www.googleapis.com/oauth2/v3/tokeninfo/?access_token="
 	// Metadatadata Server name for the default Service Account
 	defaultServiceAccountMetadataServerName = "default"
+	// Environment variable name for the principal email
+	principalEmailEnvVar = "GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL"
 )
 
 // Returns the principal email address for ADC credentials
 func getADCPrincipalEmail(creds *google.Credentials) (string, error) {
+	// Check if the user has explicitly set the principal email via an environment variable
+	if email, ok := os.LookupEnv(principalEmailEnvVar); ok && email != "" {
+		if err := validatePrincipalEmail(email); err != nil {
+			return "", fmt.Errorf("principal email (%q) from environment variable (%q) did not pass validation: %w", email, principalEmailEnvVar, err)
+		}
+		return email, nil
+	}
 
 	// If we are in GCE - then we can fetch the email address of the default Service Account
 	// directly from the Metadata server

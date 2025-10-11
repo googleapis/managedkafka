@@ -45,7 +45,7 @@ func NewADCMechanism(ctx context.Context) (*Mechanism, error) {
 	}
 	email, err := getADCPrincipalEmail(creds)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching principal email for Appication Default Credentials: %w", err)
+		return nil, fmt.Errorf("error fetching principal email for Appication Default Credentials: %w. Please set the %q environment variable", err, principalEmailEnvVar)
 	}
 	return &Mechanism{
 		emailAddress: email,
