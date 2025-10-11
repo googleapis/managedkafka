@@ -70,6 +70,10 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
     abstract String getAccount();
   }
 
+  String getPrincipalFromEnvironmentVariable() {
+    return System.getenv("GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL");
+  }
+
   private static final String HEADER =
       new Gson().toJson(ImmutableMap.of("typ", "JWT", "alg", "GOOG_OAUTH2_TOKEN"));
 
@@ -138,9 +142,20 @@ public class GcpLoginCallbackHandler implements AuthenticateCallbackHandler {
       subject = ((StubGoogleCredentials) credentials).getAccount();
     } else if (credentials instanceof IdTokenProvider) {
       subject = parseGoogleIdToken((IdTokenProvider) credentials).getEmail();
-    } else {
-      throw new IOException("Unknown credentials type: " + credentials.getClass().getName());
     }
+
+    // Allow overriding the principal via an environment variable. This is useful for
+    // credentials that do not support the getAccount() or similar method, such as
+    // Workforce Identity Federation
+    String envSubject = getPrincipalFromEnvironmentVariable();
+    if (envSubject != null && !envSubject.isEmpty()) {
+      subject = envSubject;
+    }
+    if (subject == null || subject.isEmpty()) {
+        throw new IOException("Unable to determine principal for credentials type: " + credentials.getClass().getName() +
+          ". Please set the GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL environment variable.");
+    }
+
     credentials.refreshIfExpired();
     AccessToken googleAccessToken = credentials.getAccessToken();
     String kafkaToken = getKafkaAccessToken(googleAccessToken, subject);
