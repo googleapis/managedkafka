@@ -63,7 +63,7 @@ public final class GcpLoginCallbackHandlerTest {
     }
   }
 
-  public GcpLoginCallbackHandlerWithEnv createHandler(GoogleCredentials credentials, String principal) throws Exception {
+  public GcpLoginCallbackHandlerWithEnv createHandlerWithEnv(GoogleCredentials credentials, String principal) throws Exception {
     GcpLoginCallbackHandlerWithEnv gcpLoginCallbackHandler = new GcpLoginCallbackHandlerWithEnv(credentials, principal);
     HashMap configs = new HashMap<String, Object>();
     ArrayList jaasConfig = new ArrayList<AppConfigurationEntry>();
@@ -97,7 +97,7 @@ public final class GcpLoginCallbackHandlerTest {
     OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new FakeGoogleCredentials(), null);
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new FakeGoogleCredentials(), null);
     gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
 
     OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
@@ -127,7 +127,7 @@ public final class GcpLoginCallbackHandlerTest {
     OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new FakeGoogleCredentials(),   "fake-environment-account@google.com");
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new FakeGoogleCredentials(),   "fake-environment-account@google.com");
     gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
 
     OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
@@ -155,7 +155,7 @@ public final class GcpLoginCallbackHandlerTest {
     OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new UnsupportedCredentials(), null);
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new UnsupportedCredentials(), null);
     assertThrows(IOException.class, () -> gcpOAuthBearerLoginCallbackHandler.handle(callbacks));
   }
 
@@ -165,7 +165,7 @@ public final class GcpLoginCallbackHandlerTest {
     OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new UnsupportedCredentials(), "fake-environment-account@google.com");
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new UnsupportedCredentials(), "fake-environment-account@google.com");
     gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
 
     OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
