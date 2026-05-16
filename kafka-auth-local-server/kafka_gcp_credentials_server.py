@@ -40,15 +40,14 @@ _HEADER = json.dumps(dict(typ='JWT', alg='GOOG_OAUTH2_TOKEN'))
 
 
 def get_jwt(creds):
-  subject = getattr(creds, 'service_account_email', None)
+  subject = os.environ.get('GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL')
   if not subject:
-      env_principal = os.environ.get('GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL')
-      if not env_principal:
-          raise ValueError(
+      subject = getattr(creds, 'service_account_email', None)
+  if not subject:
+      raise ValueError(
           'Unable to determine principal for credentials. Please set the '
           'GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL environment variable'
-        )
-      subject = env_principal
+      )
   return json.dumps(
       dict(
           exp=creds.expiry.replace(tzinfo=datetime.timezone.utc).timestamp(),
