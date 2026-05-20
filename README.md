@@ -10,7 +10,7 @@ The second alternative offers a solution for non-Java Kafka clients, but require
 
 In either case, your client leverages Google Auth libraries for authentication using default environment credentials. On GCP environments like GKE or GCE, this typically implies using the environment service accounts. You can override this behavior and specify different credentials using the GOOGLE_APPLICATION_CREDENTIALS environment variable, as detailed in [this article](https://github.com/googleapis/google-auth-library-java?tab=readme-ov-file#getting-application-default-credentials).
 
-Authentication is not supported for clients using [Workload Identity Federation for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity). As an alternative, [link Kubernetes service accounts to IAM service accounts](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#kubernetes-sa-to-iam).
+For most credential types, these client-side libraries can programmatically determine the authentication principal. In some scenarios, such as when using [Workforce Identity Federation](https://docs.cloud.google.com/iam/docs/workforce-identity-federation) or other BYOID credential types - you may need to specify the authentication principal via an environment variable. All libraries in this repository accept the `GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL` environment variable which, when set, will be the authoritative source for the principal. For example `export GOOGLE_MANAGED_KAFKA_AUTH_PRINCIPAL=principal://iam.googleapis.com/locations/global/workforcePools/my-workforce-identity-pool/subject/test@example.com`.
 
 ## Kafka Java Auth Client Handler
 
