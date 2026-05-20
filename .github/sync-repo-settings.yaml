@@ -35,5 +35,5 @@ branchProtectionRules:
 
 # Set team access
 permissionRules:
-  - team: managedkafka
+  - team: managed-kafka-team
     permission: admin
