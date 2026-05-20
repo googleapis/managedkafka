@@ -22,12 +22,60 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
+
+func TestGetADCPrincipalEmail(t *testing.T) {
+	tests := []struct {
+		name        string
+		setupFunc   func()
+		cleanUpFunc func()
+		expectErr   bool
+		expectEmail string
+	}{
+		{
+			name:        "Env Var Set - Valid Email",
+			setupFunc:   func() { _ = os.Setenv(principalEmailEnvVar, "human-principal@example.com") },
+			cleanUpFunc: func() { _ = os.Unsetenv(principalEmailEnvVar) },
+			expectEmail: "human-principal@example.com",
+		},
+		{
+			name:        "Env Var Set - Invalid Email",
+			setupFunc:   func() { _ = os.Setenv(principalEmailEnvVar, "this-is-not-an-email") },
+			cleanUpFunc: func() { _ = os.Unsetenv(principalEmailEnvVar) },
+			expectErr:   true,
+			expectEmail: "",
+		},
+		{
+			name:        "Env Var Empty",
+			setupFunc:   func() { _ = os.Setenv(principalEmailEnvVar, "") },
+			cleanUpFunc: func() { _ = os.Unsetenv(principalEmailEnvVar) },
+			expectErr:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setupFunc != nil {
+				tt.setupFunc()
+			}
+			if tt.cleanUpFunc != nil {
+				defer tt.cleanUpFunc()
+			}
+			gotEmail, gotErr := getADCPrincipalEmail(&google.Credentials{})
+			if tt.expectErr {
+				assert.Error(t, gotErr)
+				return
+			}
+			assert.NoError(t, gotErr)
+			assert.Equal(t, tt.expectEmail, gotEmail)
+		})
+	}
+}
 
 func TestValidatePrincipalEmail(t *testing.T) {
 
