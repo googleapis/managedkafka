@@ -56,10 +56,15 @@ public final class GcpLoginCallbackHandlerTest {
     }
   }
 
-  static class UnsupportedCredentials extends GoogleCredentials {}
+  static class UnsupportedCredentials extends GoogleCredentials {
+    @Override
+    public AccessToken refreshAccessToken() throws IOException {
+      return new AccessToken("fake-access-token", Date.from(Instant.now().plusSeconds(3600)));
+    }
+  }
 
-  public GcpLoginCallbackHandler createHandler(GoogleCredentials credentials) throws Exception {
-    GcpLoginCallbackHandler gcpLoginCallbackHandler = new GcpLoginCallbackHandler(credentials);
+  public GcpLoginCallbackHandlerWithEnv createHandlerWithEnv(GoogleCredentials credentials, String principal) throws Exception {
+    GcpLoginCallbackHandlerWithEnv gcpLoginCallbackHandler = new GcpLoginCallbackHandlerWithEnv(credentials, principal);
     HashMap configs = new HashMap<String, Object>();
     ArrayList jaasConfig = new ArrayList<AppConfigurationEntry>();
     jaasConfig.add(
@@ -72,13 +77,27 @@ public final class GcpLoginCallbackHandlerTest {
     return gcpLoginCallbackHandler;
   }
 
+  static class GcpLoginCallbackHandlerWithEnv extends GcpLoginCallbackHandler {
+    private final String principal;
+
+    GcpLoginCallbackHandlerWithEnv(GoogleCredentials credentials, String principal) {
+      super(credentials);
+      this.principal = principal;
+    }
+
+    @Override
+    String getPrincipalFromEnvironmentVariable() {
+      return principal;
+    }
+  }
+
   @Test
-  public void success() throws Exception {
+  public void success_withSupportedCredentials() throws Exception {
     Instant now = Instant.now();
     OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new FakeGoogleCredentials());
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new FakeGoogleCredentials(), null);
     gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
 
     OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
@@ -102,11 +121,70 @@ public final class GcpLoginCallbackHandlerTest {
   }
 
   @Test
-  public void fail_unsupportedCredentialType() throws Exception {
+  // Test that we can override the principal when using a supported credentials type.
+  public void success_withSupportedCredentialsEnvPrincipalOverride() throws Exception {
+    Instant now = Instant.now();
     OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
     Callback[] callbacks = {oauthBearerTokenCallback};
 
-    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandler(new UnsupportedCredentials());
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new FakeGoogleCredentials(),   "fake-environment-account@google.com");
+    gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
+
+    OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
+    SerializedJwt jwtToken = new SerializedJwt(oauthBearerToken.value());
+
+    Map<String, Object> header = OAuthBearerUnsecuredJws.toMap(jwtToken.getHeader());
+    Map<String, Object> payload = OAuthBearerUnsecuredJws.toMap(jwtToken.getPayload());
+
+    // Validate the JWT token is as expected by our server.
+    assertThat(header.get("typ")).isEqualTo("JWT");
+    assertThat(header.get("alg")).isEqualTo("GOOG_OAUTH2_TOKEN");
+
+    assertThat(payload.get("exp")).isInstanceOf(Integer.class);
+    assertThat(((int) payload.get("exp"))).isGreaterThan((int) now.getEpochSecond());
+
+    // The signature is the base64 encoded Google OAuth token.
+    assertThat(new String(Base64.getUrlDecoder().decode(jwtToken.getSignature()), UTF_8))
+        .isEqualTo("fake-access-token");
+    assertThat(oauthBearerToken.scope()).isEqualTo(ImmutableSet.of("kafka"));
+    assertThat(oauthBearerToken.principalName()).isEqualTo("fake-environment-account@google.com");
+  }
+
+  @Test
+  public void fail_withUnsupportedCredentialsNoEnvPrincipal() throws Exception {
+    OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
+    Callback[] callbacks = {oauthBearerTokenCallback};
+
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new UnsupportedCredentials(), null);
     assertThrows(IOException.class, () -> gcpOAuthBearerLoginCallbackHandler.handle(callbacks));
+  }
+
+  @Test
+  public void success_withUnsupportedCredentialsEnvPrincipal() throws Exception {
+    Instant now = Instant.now();
+    OAuthBearerTokenCallback oauthBearerTokenCallback = new OAuthBearerTokenCallback();
+    Callback[] callbacks = {oauthBearerTokenCallback};
+
+    GcpLoginCallbackHandler gcpOAuthBearerLoginCallbackHandler = createHandlerWithEnv(new UnsupportedCredentials(), "fake-environment-account@google.com");
+    gcpOAuthBearerLoginCallbackHandler.handle(callbacks);
+
+    OAuthBearerToken oauthBearerToken = oauthBearerTokenCallback.token();
+    SerializedJwt jwtToken = new SerializedJwt(oauthBearerToken.value());
+
+    Map<String, Object> header = OAuthBearerUnsecuredJws.toMap(jwtToken.getHeader());
+    Map<String, Object> payload = OAuthBearerUnsecuredJws.toMap(jwtToken.getPayload());
+
+    // Validate the JWT token is as expected by our server.
+    assertThat(header.get("typ")).isEqualTo("JWT");
+    assertThat(header.get("alg")).isEqualTo("GOOG_OAUTH2_TOKEN");
+
+    assertThat(payload.get("exp")).isInstanceOf(Integer.class);
+    assertThat(((int) payload.get("exp"))).isGreaterThan((int) now.getEpochSecond());
+
+    // The signature is the base64 encoded Google OAuth token.
+    assertThat(new String(Base64.getUrlDecoder().decode(jwtToken.getSignature()), UTF_8))
+        .isEqualTo("fake-access-token");
+    assertThat(oauthBearerToken.scope()).isEqualTo(ImmutableSet.of("kafka"));
+    assertThat(oauthBearerToken.principalName()).isEqualTo("fake-environment-account@google.com");
   }
 }
