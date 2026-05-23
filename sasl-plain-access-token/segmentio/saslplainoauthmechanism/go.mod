@@ -3,13 +3,13 @@ module github.com/googleapis/managedkafka/sasl-plain-access-token/segmentio/sasl
 go 1.23.0
 
 require (
-	github.com/segmentio/kafka-go v0.4.47
-	golang.org/x/oauth2 v0.27.0
+	github.com/segmentio/kafka-go v0.4.49
+	golang.org/x/oauth2 v0.31.0
 )
 
 require (
-	cloud.google.com/go/compute/metadata v0.3.0
-	github.com/stretchr/testify v1.8.0
+	cloud.google.com/go/compute/metadata v0.9.0
+	github.com/stretchr/testify v1.11.1
 )
 
 require (
