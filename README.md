@@ -2,11 +2,13 @@
 
 Client-side Kafka software libraries enabling authentication with Google Cloud Managed Service for Apache Kafka. These libraries allow you to authenticate with the service using [application default credentials](http://cloud/docs/authentication/provide-credentials-adc). This is a safer and simpler authentication mechanism than using service account keys directly. The method relies on Google's OAuth via Kafka's OAUTHBEARER mechanism.
 
-The following presents two alternatives for configuring [Kafka Confluent clients](https://docs.confluent.io/platform/current/clients/index.html) to use Google's authentication mechanisms in order to connect with clusters deployed using the Managed Service for Apache Kafka.
+The following presents three alternatives for configuring [Kafka Confluent clients](https://docs.confluent.io/platform/current/clients/index.html) to use Google's authentication mechanisms in order to connect with clusters deployed using the Managed Service for Apache Kafka.
 
 The first alternative is suited for Java clients where you have the ability to modify the client classpath to include the authentication libraries.
 
 The second alternative offers a solution for non-Java Kafka clients, but requires you to set up a local authentication server. This server's role is to securely exchange your application's default credentials with the Kafka client, enabling authentication and authorization for accessing the Kafka cluster.
+
+The third alternative offers a solution for non-Java kafka clients where your client is running inside of a GCP environment with a service account that has `Managed Kafka Client` role attached to it. It is appicable in situations where you cannot create a service account key which leaves you with using `OAUTHBEARER` as the only option. This option utilizes [AbstractTokenProvider](https://github.com/dpkp/kafka-python/blob/master/kafka/oauth/abstract.py). 
 
 In either case, your client leverages Google Auth libraries for authentication using default environment credentials. On GCP environments like GKE or GCE, this typically implies using the environment service accounts. You can override this behavior and specify different credentials using the GOOGLE_APPLICATION_CREDENTIALS environment variable, as detailed in [this article](https://github.com/googleapis/google-auth-library-java?tab=readme-ov-file#getting-application-default-credentials).
 
@@ -135,6 +137,40 @@ const producer = await createProducer(config, (err, report) => {
 
 ...
 ```
+
+## GCP Environments with Service Accounts
+
+For Python, you can initialize your client as follows:
+```
+...
+
+from kafka.oauth.abstract import AbstractTokenProvider
+
+class MyTokenProvider(AbstractTokenProvider):
+
+    #include kafka_gcp_credentials_server.py content without the local server parts and build_message() method.  
+
+    def __init__(self, **config):
+        pass
+
+    def token(self):
+        message = get_kafka_access_token(creds) 
+        return message
+
+my_token_provider = MyTokenProvider()
+
+conf = {
+    'bootstrap.servers': '<BOOTSTRAP_SERVER_ADDRESS>',
+    'security.protocol': 'SASL_SSL',
+    'sasl.mechanisms': 'OAUTHBEARER',
+    'sasl_oauth_token_provider': my_token_provider,
+}
+
+producer = Producer(conf)
+...
+```
+
+
 
 * *Apache Kafka is a registered trademark owned by the Apache Software Foundation.*
 
